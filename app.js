@@ -2,7 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const { inTestEnv, inProdEnv, SERVER_PORT } = require('./env');
+
+const session = require('express-session');
+
+const {
+  inTestEnv,
+  inProdEnv,
+  SERVER_PORT,
+  SESSION_COOKIE_SECRET,
+  CORS_ALLOWED_ORINGINS,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_DOMAIN,
+} = require('./env');
+
+const sessionStore = require('./sessionStore');
 
 const app = express();
 
@@ -13,9 +26,34 @@ if (!inProdEnv && !inTestEnv) {
 }
 
 // pre-route middlewares
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = CORS_ALLOWED_ORINGINS.split(',');
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.use(
+  session({
+    key: SESSION_COOKIE_NAME,
+    secret: SESSION_COOKIE_SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: true,
+      secure: inProdEnv,
+      domain: SESSION_COOKIE_DOMAIN,
+    },
+  })
+);
 
 // routes
 require('./routes')(app);
