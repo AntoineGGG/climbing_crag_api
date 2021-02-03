@@ -2,7 +2,7 @@ const { verifyPassword, findByEmail } = require('../models/users.js');
 // const { SESSION_COOKIE_NAME } = require('../env');
 
 module.exports.handleLogin = async (req, res) => {
-  const user = await findByEmail(req.body.email, false);
+  const user = await findByEmail(req.body.mail, false);
   const checkedPassword = await verifyPassword(user, req.body.password);
 
   if (!user) {

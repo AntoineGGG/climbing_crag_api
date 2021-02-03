@@ -15,9 +15,13 @@ const verifyPassword = async (user, plainPassword) => {
 const getUsers = async () => {
   return db.query('SELECT * FROM users');
 };
+const getOneUser = async (id) => {
+  console.log(id);
+  return db.query('Select * FROM users WHERE id= ?', [id]);
+};
 
-const findByEmail = async (email, failIfNotFound = true) => {
-  const rows = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+const findByEmail = async (mail, failIfNotFound = true) => {
+  const rows = await db.query(`SELECT * FROM users WHERE mail = ?`, [mail]);
   if (rows.length) {
     return rows[0];
   }
@@ -26,7 +30,7 @@ const findByEmail = async (email, failIfNotFound = true) => {
 };
 
 const createUser = async (newAttributes) => {
-  const { email } = newAttributes;
+  const { mail } = newAttributes;
   const password = await hashPassword(newAttributes);
   const newObj = { ...newAttributes, password };
   const res = await db
@@ -38,7 +42,13 @@ const createUser = async (newAttributes) => {
   if (!res) {
     return false;
   }
-  return { email, id: res.insertId };
+  return { mail, id: res.insertId };
 };
 
-module.exports = { getUsers, findByEmail, createUser, verifyPassword };
+module.exports = {
+  getUsers,
+  findByEmail,
+  createUser,
+  verifyPassword,
+  getOneUser,
+};
