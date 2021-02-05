@@ -2,12 +2,14 @@ const db = require('../db');
 const definedAttributesToSqlSet = require('../helpers/definedAttributesToSqlSet');
 
 const getAllRoutes = async () => {
-  return db.query('Select * FROM routes');
+  return db.query(
+    'Select UR.*, R.*, C.*, U.firstname, U.lastname from User_has_Routes as UR INNER JOIN routes AS R ON R.id=UR.routes_id INNER JOIN crags AS C ON C.id = UR.crag_id INNER JOIN users AS U ON U.id=UR.User_id'
+  );
 };
 
 const getUserRoutes = async (id) => {
   return db.query(
-    'Select UR.*, R.* from User_has_Routes as UR INNER JOIN routes AS R ON R.id=UR.routes_id where UR.User_id = ?',
+    'Select UR.*, R.*, C.*, U.firstname, U.lastname from User_has_Routes as UR INNER JOIN routes AS R ON R.id=UR.routes_id INNER JOIN crags AS C ON C.id = UR.crag_id INNER JOIN users AS U ON U.id=UR.User_id where UR.User_id = ?',
     [id]
   );
 };
