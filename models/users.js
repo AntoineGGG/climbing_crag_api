@@ -16,7 +16,6 @@ const getUsers = async () => {
   return db.query('SELECT * FROM users');
 };
 const getOneUser = async (id) => {
-  console.log(id);
   return db.query('Select * FROM users WHERE id= ?', [id]);
 };
 

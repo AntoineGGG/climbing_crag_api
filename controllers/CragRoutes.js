@@ -1,32 +1,39 @@
 const {
   createRoutes,
-  getRoutes,
+  getAllRoutes,
+  getUserRoutes,
   linkRouteToCragToUsers,
 } = require('../models/CragRoutes.js');
 
-module.exports.handleGetRoutes = async (req, res) => {
-  const rawData = await getRoutes();
+module.exports.handleGetAllRoutes = async (req, res) => {
+  const rawData = await getAllRoutes();
+  return res.status(200).send(rawData);
+};
+
+module.exports.handleGetUserRoutes = async (req, res) => {
+  let rawData;
+  if (req.session.userId) {
+    rawData = await getUserRoutes(req.session.userId);
+  }
   return res.status(200).send(rawData);
 };
 module.exports.handleCreateRoutes = async (req, res) => {
+  const picture = req.file ? req.file.path : null;
   const {
-    id,
     name,
     multipitch,
     grade,
     done,
-    picture,
     Crag_id,
     length,
     comment,
-  } = req.body;
+  } = JSON.parse(req.body.data);
   const routesData = await createRoutes({
-    id,
     name,
     multipitch,
+    picture,
     grade,
     done,
-    picture,
     length,
     comment,
   });

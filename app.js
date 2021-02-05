@@ -54,6 +54,8 @@ app.use(
     },
   })
 );
+// static for file upload
+app.use('/file-storage', express.static('file-storage'));
 
 // routes
 require('./routes')(app);
